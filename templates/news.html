@@ -1,0 +1,44 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+    Новостной портал
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+   <h1>Все новости на одном портале!</h1>
+   <!-- Используем переданную из представления переменную time_now
+   и применяем к ней фильтр date. По назначению этот фильтр очень похож
+   на метод strftime у объекта datetime в Python — вывод времени
+   в указанном формате. -->
+   <h6>сегодня {{ time_now|date:'d M Y A' }}</h6>
+   <hr>
+   {% if news %}
+       <table>
+           <tr>
+               <td>Заголовок</td>
+               <td>Категория</td>
+               <td>Автор</td>
+               <td>Дата, время публикации</td>
+               <td>Текст</td>
+               <td>Рейтинг статьи</td>
+           </tr>
+
+           {% for new in news %} <!--.objects.order_by('datetime') -->
+           <tr>
+               <td>{{ new.title|truncatechars:20 }}</td>
+               <td>{% for cat in new.post_category.all %} {{ cat.name|default:"---" }} {% endfor %}</td>
+               <td>{{ new.author.user.username }}</td>
+               <td>{{ new.datetime|date:'d M Y, H:m' }}</td>
+               <td>{{ new.text|truncatechars:20 }}</td>
+               <td>{{ new.rating }}</td>
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2>Увы, ничего достойного вашего внимания пока не случилось :((</h2>
+   {% endif %}
+
+{% endblock content %}
